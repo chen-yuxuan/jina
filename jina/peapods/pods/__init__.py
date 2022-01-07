@@ -6,6 +6,8 @@ from contextlib import ExitStack
 from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
+from jina.hubble.hubio import HubIO
+
 from .. import Pea
 from ..networking import GrpcConnectionPool, host_is_local
 from ..peas.container import ContainerPea
@@ -410,10 +412,11 @@ class Pod(BasePod):
 
         if self.is_sandbox:
             # TODO: dynamically fetching
-            self.first_pea_args.host = 'sandbox2.staging.jina.ai'
-            self.first_pea_args.port_in = 443
-            self.peas_args['head'].host = 'sandbox2.staging.jina.ai'
-            self.peas_args['head'].port_in = 443
+            host, port = HubIO.deploy_public_sandbox()
+            self.first_pea_args.host = host
+            self.first_pea_args.port_in = port
+            self.peas_args['head'].host = host
+            self.peas_args['head'].port_in = port
 
     def update_worker_pea_args(self):
         """ Update args of all its worker peas based on Pod args. Does not touch head and tail"""
